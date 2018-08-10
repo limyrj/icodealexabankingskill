@@ -14,7 +14,7 @@ def get_user_data(userID):
         userinputid = input("Search again?:")
         get_user_data(userinputid)  
     #formats the JSON reply the api has sent into a dictionary, which the below code parses into a string output with multiple for loops. 
-    else:    
+    elif responseReply.status_code == 200:    
         interpretedReply = responseReply.json()
         for data in interpretedReply:
             for objects in interpretedReply[data]:
@@ -24,6 +24,8 @@ def get_user_data(userID):
         if userinputid == "no":
             sys.exit()
         get_user_data(userinputid)
+    else:
+        print("An unexpected error occurred; error code %s" %(str(responseReply.status_code)))
 print("Make sure you have the json and requests library to run this code")
 #grabs the id the user wishes to call
 userinputid = input("Hi what's the id you want:")
