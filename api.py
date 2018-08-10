@@ -49,3 +49,6 @@ if userChoice == "1":
     get_user_data()
 elif userChoice == "2":
     add_user_data()
+else:
+    userBuffer = input("You just failed a simple options question")
+    sys.exit()
