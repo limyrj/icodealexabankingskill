@@ -5,9 +5,7 @@ import sys
 #we define the base url to simplify the code and reduce potential errors.
 api_base_url = "https://reqres.in"
 #the base function of the code. We define it first to increase its reusability if more functions are to be added to this code.
-def get_user_data():
-    #grabs the id the user wishes to call
-    userinputid = input("Hi what's the id you want:")
+def get_user_data(userinputid):
     #calls the api for the user info with the id the user has entered.
     responseReply = requests.get("%s/api/users/%s" %(api_base_url, userinputid))
     #an if loop to see if the user exists; 404 status code = user doesn't exist. 
@@ -46,7 +44,9 @@ def add_user_data():
 print("Make sure you have the json and requests library to run this code")
 userChoice = input("Select a function:\n1. View user (Press 1)\n2. Add user (Press 2)")
 if userChoice == "1":
-    get_user_data()
+    #grabs the id the user wishes to call
+    userinputid = input("Hi what's the id you want:")
+    get_user_data(userinputid)
 elif userChoice == "2":
     add_user_data()
 else:
