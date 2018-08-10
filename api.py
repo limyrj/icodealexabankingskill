@@ -5,6 +5,70 @@ import sys
 #we define the base url to simplify the code and reduce potential errors.
 api_base_url = "https://reqres.in"
 #the base function of the code. We define it first to increase its reusability if more functions are to be added to this code.
+def register_user():
+    userEmail = input("What is your email?:")
+    userPassword = input("What is your password?")
+    userPasswordConfirm = input("Please reenter your password.")
+    #checks if the reentered password matches the original.
+    if userPassword == userPasswordConfirm:
+        #makes the login info into a dictionary
+        loginParams = {"email": userEmail, "password": userPassword}
+        #sends the request to the api!
+        responseLogin = requests.post("%s/api/register" %(api_base_url), data = loginParams)
+        if responseLogin.status_code == 201:
+            logintoken = responseLogin.json()
+            print("Registration successful, token: %s" %(logintoken["token"]))
+            userChoice = input("Proceed with login? [y/n]")
+            if userChoice == "y":
+                login_user()
+            if userChoice == "n":
+                sys.exit()
+            else:
+                #the program is disappointed
+                userBuffer = input("You just failed a simple options question")
+                sys.exit()
+        elif responseLogin.status_code == 400:
+            #you didn't enter one of the values!
+            loginError = responseLogin.json()
+            for data in loginError:
+                print(data + " : " + loginError[data])
+            register_user()
+        else:
+            #a random error popped up!
+            loginError = responseLogin.json()
+            for data in loginError:
+                print("An unexpected error occurred: " + data + " : " +loginError[data] + "with error code: " +str(responseLogin.status_code))
+            register_user()
+    else:
+        userBuffer = input("Sorry, the passwords did not match.")
+        register_user()
+    userBuffer = input("Thanks and goodbye!")
+    sys.exit()
+def login_user():
+    userEmail = input("What is your email?:")
+    userPassword = input("What is your password?")
+    userPasswordConfirm = input("Please reenter your password.")
+    if userPassword == userPasswordConfirm:
+        loginParams = {"email": userEmail, "password": userPassword}
+        responseLogin = requests.post("%s/api/login" %(api_base_url), data = loginParams)
+        if responseLogin.status_code == 200:
+            logintoken = responseLogin.json()
+            print("Login successful, token: %s" %(logintoken["token"]))
+        elif responseLogin.status_code == 400:
+            loginError = responseLogin.json()
+            for data in loginError:
+                print(data + " : " + loginError[data])
+            login_user()
+        else:
+            loginError = responseLogin.json()
+            for data in loginError:
+                print("An unexpected error occurred: " + data + " : " +loginError[data] + "with error code: " +str(responseLogin.status_code))
+            login_user()
+    else:
+        userBuffer = input("Sorry, the passwords did not match.")
+        login_user()
+    userBuffer = input("Thanks and goodbye!")
+    sys.exit()
 def get_user_data(userinputid):
     #calls the api for the user info with the id the user has entered.
     responseReply = requests.get("%s/api/users/%s" %(api_base_url, userinputid))
@@ -42,13 +106,17 @@ def add_user_data():
     else:
         print("An unexpected error occured; error code %s" %(str(responseReply.status_code)))
 print("Make sure you have the json and requests library to run this code")
-userChoice = input("Select a function:\n1. View user (Press 1)\n2. Add user (Press 2)")
+userChoice = input("Select a function:\n1. View user (Press 1)\n2. Add user (Press 2)\n3. Register (Press 3)\n4. Login (Press 4)")
 if userChoice == "1":
     #grabs the id the user wishes to call
     userinputid = input("Hi what's the id you want:")
     get_user_data(userinputid)
 elif userChoice == "2":
     add_user_data()
+elif userChoice == "3":
+    register_user()
+elif userChoice == "4":
+    login_user()
 else:
     userBuffer = input("You just failed a simple options question")
     sys.exit()
